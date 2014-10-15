@@ -75,7 +75,7 @@ class ClusterUtil {
    */
   def clusters(input:String, jobConf:JobConf):List[Int] = {
 		
-    val scheme = new WritableSequenceFile(new Fields("ix","vector"),classOf[IntWritable],classOf[WeightedPropertyVectorWritable]) //new CSequenceFile(new Fields("ix","vector"))
+    val scheme = new WritableSequenceFile(new Fields("ix","vector"),classOf[IntWritable],classOf[WeightedPropertyVectorWritable])
     val tap = new Hfs(scheme,input).asInstanceOf[HadoopTap]
 
 	val iter = new HadoopFlowProcess(jobConf).openTapForRead(tap)
