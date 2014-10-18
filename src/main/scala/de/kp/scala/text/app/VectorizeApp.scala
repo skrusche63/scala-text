@@ -19,6 +19,7 @@ package de.kp.scala.text.app
  */
 
 import com.twitter.scalding.Args
+
 import de.kp.scala.text.model.ProcessMode
 import de.kp.scala.text.job.VectorizeJob
 

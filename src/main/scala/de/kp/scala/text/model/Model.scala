@@ -39,3 +39,18 @@ object ProcessMode {
   val WITHOUT_CLUSTERS:String = "WITHOUT_CLUSTERS"
 
 }
+
+object ProcessStage {
+  
+  val CLUSTERING:String     = "CLUSTERING"
+    
+  val PARTITIONING:String   = "PARTITIONING"
+  
+  val TOPIC_DUMPING:String  = "TOPIC_DUMPING"  
+  val TOPIC_MODELING:String = "TOPIC_MODELING"
+  
+  val VECTORIZTAION:String  = "VECTORIZATION"
+    
+  val NO_STAGE:String = "NO_STAGE"
+  
+}

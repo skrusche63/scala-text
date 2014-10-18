@@ -29,7 +29,7 @@ import org.apache.mahout.common.HadoopUtil
 import org.apache.mahout.utils.vectors.RowIdJob
 import org.apache.mahout.clustering.lda.cvb.CVB0Driver
 
-import de.kp.scala.text.model.ProcessMode
+import de.kp.scala.text.model._
 
 class LDAJob(args:Args) extends Job(args) {
 
@@ -37,6 +37,26 @@ class LDAJob(args:Args) extends Job(args) {
   val fs = FileSystem.get(conf)
 
   override implicit val mode = new Hdfs(true, conf) 
+
+  override def next: Option[Job] = {
+    
+    val nextStep = args("next")
+    nextStep match {
+      
+      case ProcessStage.NO_STAGE => None
+      
+      case ProcessStage.TOPIC_DUMPING => {
+        
+        val nextArgs = args + ("next", Some(ProcessStage.NO_STAGE))
+        Some(new TopicJob(nextArgs))
+      
+      }
+     
+      case _ => None
+      
+    }
+    
+  }
   /*
    * Override 'run' avoids errors from cascading that no
    * source and source tap is defined and no processing pipe

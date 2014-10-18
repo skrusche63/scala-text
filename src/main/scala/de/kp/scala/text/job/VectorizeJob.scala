@@ -29,7 +29,7 @@ import org.apache.mahout.common.HadoopUtil
 import org.apache.mahout.text.SequenceFilesFromDirectory
 import org.apache.mahout.vectorizer.SparseVectorsFromSequenceFiles
 
-import de.kp.scala.text.model.ProcessMode
+import de.kp.scala.text.model._
 
 /**
  * Vectorization of a corpus of text artifacts is performed 
@@ -47,6 +47,39 @@ class VectorizeJob(args:Args) extends Job(args) {
   val fs = FileSystem.get(conf)
   
   override implicit val mode = new Hdfs(true, conf) 
+
+  override def next: Option[Job] = {
+    
+    val nextStep = args("next")
+    nextStep match {
+      
+      case ProcessStage.NO_STAGE => None
+      
+      case ProcessStage.TOPIC_MODELING => {
+        
+        val nextArgs = args + ("next", Some(ProcessStage.TOPIC_DUMPING))
+        Some(new LDAJob(nextArgs))
+      
+      }
+
+      case ProcessStage.CLUSTERING => {
+        
+        val input  = args("input") + "-vec"
+        val output = args("input") + "-cls"
+        
+        val mode = ProcessMode.WITH_CLUSTERS
+        
+        val nextArgs = args + ("input", Some(input)) + ("output", Some(output)) + ("mode", Some(mode))
+        Some(new KMeansJob(nextArgs))
+    
+      }
+      
+      case _ => None
+      
+    }
+    
+  }
+
   /*
    * Override 'run' avoids errors from cascading that no
    * source and source tap is defined and no processing pipe
@@ -61,14 +94,14 @@ class VectorizeJob(args:Args) extends Job(args) {
        * text artifacts; it is assumed that there is no
        * sub directory structure
        */
-      case ProcessMode.WITH_CLUSTERS => withCluster(args)
+      case ProcessMode.WITHOUT_CLUSTERS => withCluster(args)
       
       /*
        * Vectorize a directory with a sub structure defined
        * by the cluster identifiers discovered in a previous
        * clustering job 
        */
-      case ProcessMode.WITHOUT_CLUSTERS => withoutCluster(args)
+      case ProcessMode.WITH_CLUSTERS => withoutCluster(args)
       
       case _ => throw new Exception("Process mode '" + mode + "' is not supported.")
       

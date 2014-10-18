@@ -71,7 +71,7 @@ class KMeansJob(args:Args) extends Job(args) {
      */
     val clusterClassificationThreshold = 0.0
 
-    val numClusters = 5
+    val numClusters = args("num_cluster").toInt
     /*
      * Build random initial clusters
      */
