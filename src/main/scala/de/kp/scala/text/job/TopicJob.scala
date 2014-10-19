@@ -29,7 +29,7 @@ import org.apache.hadoop.fs.{FileSystem,Path}
 import org.apache.hadoop.io.{IntWritable,Text}
 import org.apache.mahout.math.VectorWritable
 
-import de.kp.scala.text.model.ProcessMode
+import de.kp.scala.text.model.{ProcessMode,ProcessStage}
 
 import scala.collection.mutable.{ArrayBuffer,HashMap}
 
@@ -44,6 +44,19 @@ class TopicJob(args:Args) extends Job(args) {
   val fs = FileSystem.get(conf)
   
   override implicit val mode = new Hdfs(true, conf) 
+
+  override def next: Option[Job] = {
+    
+    val nextStep = args("next")
+    nextStep match {
+      
+      case ProcessStage.NO_STAGE => None
+      
+      case _ => None
+      
+    }
+    
+  }
   /*
    * Override 'run' avoids errors from cascading that no
    * source and source tap is defined and no processing pipe

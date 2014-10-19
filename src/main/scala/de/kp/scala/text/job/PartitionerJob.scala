@@ -35,6 +35,26 @@ class PartitionerJob(args:Args) extends Job(args) {
 
   val conf = new Configuration()
   override implicit val mode = new Hdfs(true, conf) 
+
+  override def next: Option[Job] = {
+    
+    val nextStep = args("next")
+    nextStep match {
+      
+      case ProcessStage.NO_STAGE => None
+      
+      case ProcessStage.VECTORIZATION => {
+        /* Specify job that follows VectorizeJob */
+        val nextArgs = args + ("next", Some(ProcessStage.TOPIC_MODELING))
+        Some(new VectorizeJob(nextArgs))
+      
+      }
+      
+      case _ => None
+      
+    }
+    
+  }
   /*
    * Override 'run' avoids errors from cascading that no
    * source and source tap is defined and no processing pipe

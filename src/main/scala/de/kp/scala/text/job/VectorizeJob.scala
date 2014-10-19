@@ -56,7 +56,7 @@ class VectorizeJob(args:Args) extends Job(args) {
       case ProcessStage.NO_STAGE => None
       
       case ProcessStage.TOPIC_MODELING => {
-        
+        /* Specify job that follows LDAJob */
         val nextArgs = args + ("next", Some(ProcessStage.TOPIC_DUMPING))
         Some(new LDAJob(nextArgs))
       
@@ -68,8 +68,8 @@ class VectorizeJob(args:Args) extends Job(args) {
         val output = args("input") + "-cls"
         
         val mode = ProcessMode.WITH_CLUSTERS
-        
-        val nextArgs = args + ("input", Some(input)) + ("output", Some(output)) + ("mode", Some(mode))
+        /* Specify job that follows KMeansjob */
+        val nextArgs = args + ("input", Some(input)) + ("output", Some(output)) + ("mode", Some(mode)) + ("next", Some(ProcessStage.PARTITIONING))
         Some(new KMeansJob(nextArgs))
     
       }

@@ -43,7 +43,7 @@ object DetectApp {
 
     val start = System.currentTimeMillis()
     
-    println("Vectorization started...")
+    println("Text processing started...")
     
     val job = new VectorizeJob(args)
     val res = job.run
@@ -73,6 +73,8 @@ object DetectApp {
         /*
          * No further processing stage
          */
+        println("Text processing successfully finished.")
+        
         val end = System.currentTimeMillis()           
         println("Total time: " + (end-start) + " ms")
         

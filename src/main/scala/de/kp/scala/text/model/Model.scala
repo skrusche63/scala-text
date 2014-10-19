@@ -71,7 +71,7 @@ object ProcessStage {
   val TOPIC_DUMPING:String  = "TOPIC_DUMPING"  
   val TOPIC_MODELING:String = "TOPIC_MODELING"
   
-  val VECTORIZTAION:String  = "VECTORIZATION"
+  val VECTORIZATION:String  = "VECTORIZATION"
     
   val NO_STAGE:String = "NO_STAGE"
   

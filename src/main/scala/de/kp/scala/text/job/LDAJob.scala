@@ -46,7 +46,7 @@ class LDAJob(args:Args) extends Job(args) {
       case ProcessStage.NO_STAGE => None
       
       case ProcessStage.TOPIC_DUMPING => {
-        
+        /* Specify job that follows TopicJob */
         val nextArgs = args + ("next", Some(ProcessStage.NO_STAGE))
         Some(new TopicJob(nextArgs))
       

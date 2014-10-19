@@ -29,6 +29,8 @@ import org.apache.mahout.common.distance.CosineDistanceMeasure
 
 import org.apache.mahout.clustering.kmeans.{KMeansDriver,RandomSeedGenerator}
 
+import de.kp.scala.text.model.ProcessStage
+
 /*
  * This Mahout based KMeans algorithm requires term vectors
  * as TF or TFID vectors; this implies, that are respective
@@ -38,6 +40,26 @@ class KMeansJob(args:Args) extends Job(args) {
 
   val conf = new Configuration()
   override implicit val mode = new Hdfs(true, conf) 
+
+  override def next: Option[Job] = {
+    
+    val nextStep = args("next")
+    nextStep match {
+      
+      case ProcessStage.NO_STAGE => None
+      
+      case ProcessStage.PARTITIONING => {
+        /* Specify job that follows PartitionerJob */
+        val nextArgs = args + ("next", Some(ProcessStage.VECTORIZATION))
+        Some(new PartitionerJob(nextArgs))
+      
+      }
+      
+      case _ => None
+      
+    }
+    
+  }
   /*
    * Override 'run' avoids errors from cascading that no
    * source and source tap is defined and no processing pipe
