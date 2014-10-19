@@ -18,6 +18,26 @@ package de.kp.scala.text.model
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.json4s._
+
+import org.json4s.native.Serialization
+import org.json4s.native.Serialization.{read,write}
+
+case class ServiceRequest(
+  service:String,task:String,data:Map[String,String]
+)
+case class ServiceResponse(
+  service:String,task:String,data:Map[String,String],status:String
+)
+
+/*
+ * Service requests are mapped onto job descriptions and are stored
+ * in a Redis instance
+ */
+case class JobDesc(
+  service:String,task:String,status:String
+)
+
 case class Pair(cluster:Int, distance:Double)
 
 object ProcessMode {
@@ -53,4 +73,61 @@ object ProcessStage {
     
   val NO_STAGE:String = "NO_STAGE"
   
+}
+
+object Serializer {
+    
+  implicit val formats = Serialization.formats(NoTypeHints)
+
+  /*
+   * Support for serialization and deserialization of job descriptions
+   */
+  def serializeJob(job:JobDesc):String = write(job)
+
+  def deserializeJob(job:String):JobDesc = read[JobDesc](job)
+  
+  /*
+   * Support for serialization of a service response and deserialization
+   * of a certain serice request
+   */
+  def serializeResponse(response:ServiceResponse):String = write(response)
+  
+  def deserializeRequest(request:String):ServiceRequest = read[ServiceRequest](request)
+  
+}
+
+object Messages {
+
+  def ALGORITHM_IS_UNKNOWN(uid:String,algorithm:String):String = String.format("""Algorithm '%s' is unknown for uid '%s'.""", algorithm, uid)
+
+  def GENERAL_ERROR(uid:String):String = String.format("""A general error appeared for uid '%s'.""", uid)
+  
+  def MISSING_PARAMETERS(uid:String):String = String.format("""Missing parameters for uid '%s'.""", uid)
+ 
+  def NO_ALGORITHM_PROVIDED(uid:String):String = String.format("""No algorithm provided for uid '%s'.""", uid)
+
+  def NO_PARAMETERS_PROVIDED(uid:String):String = String.format("""No parameters provided for uid '%s'.""", uid)
+
+  def NO_SOURCE_PROVIDED(uid:String):String = String.format("""No source provided for uid '%s'.""", uid)
+
+  def REQUEST_IS_UNKNOWN():String = String.format("""Unknown request.""")
+
+  def SOURCE_IS_UNKNOWN(uid:String,source:String):String = String.format("""Source '%s' is unknown for uid '%s'.""", source, uid)
+
+  def TASK_ALREADY_STARTED(uid:String):String = String.format("""The task with uid '%s' is already started.""", uid)
+
+  def TASK_DOES_NOT_EXIST(uid:String):String = String.format("""The task with uid '%s' does not exist.""", uid)
+
+  def TASK_IS_UNKNOWN(uid:String,task:String):String = String.format("""The task '%s' is unknown for uid '%s'.""", task, uid)
+  
+}
+
+object TextStatus {
+    
+  val STARTED:String = "started"
+  val FINISHED:String = "finished"
+  
+  val FAILURE:String = "failure"
+  val SUCCESS:String = "success"
+    
 }
