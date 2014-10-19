@@ -40,6 +40,8 @@ case class JobDesc(
 
 case class Pair(cluster:Int, distance:Double)
 
+case class Topics()
+
 object ProcessMode {
   
   /*
