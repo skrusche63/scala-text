@@ -27,7 +27,9 @@ class PredictActor  extends Actor with ActorLogging {
   def receive = {
 
     case req:ServiceRequest => {
-      
+      /*
+       * Not implemented yet
+       */
     }
     
   }

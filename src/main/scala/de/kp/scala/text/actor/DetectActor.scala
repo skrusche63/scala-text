@@ -20,16 +20,81 @@ package de.kp.scala.text.actor
 
 import akka.actor.{Actor,ActorLogging}
 
-import de.kp.scala.text.model._
+import com.twitter.scalding.Args
 
-class DetectActor  extends Actor with ActorLogging {
+import de.kp.scala.text.Detector
+
+import de.kp.scala.text.model._
+import de.kp.scala.text.redis.RedisCache
+
+class DetectActor extends Actor with ActorLogging {
  
   def receive = {
 
     case req:ServiceRequest => {
       
+      val params = properties(req)
+      val missing = (params == null)
+      
+      /* Send response to originator of request */
+      sender ! response(req, missing)
+
+      if (missing == false) {
+        /* Register status */
+        RedisCache.addStatus(req,TextStatus.STARTED)
+ 
+        try {          
+          new Detector().detect(params)
+        
+        } catch {
+          case e:Exception => RedisCache.addStatus(req,TextStatus.FAILURE)          
+        }
+
+      }
+      
+      context.stop(self)
+      
     }
     
+    case _ => {
+      
+      log.error("Unknown request.")
+      context.stop(self)
+      
+    }
+    
+  }
+  
+  private def properties(req:ServiceRequest):Args = {
+      
+    try {
+
+      // TODO
+      
+      return null
+        
+    } catch {
+      case e:Exception => {
+         return null          
+      }
+    }
+    
+  }
+  
+  private def response(req:ServiceRequest,missing:Boolean):ServiceResponse = {
+    
+    val uid = req.data("uid")
+    
+    if (missing == true) {
+      val data = Map("uid" -> uid, "message" -> Messages.MISSING_PARAMETERS(uid))
+      new ServiceResponse(req.service,req.task,data,TextStatus.FAILURE)	
+  
+    } else {
+      val data = Map("uid" -> uid, "message" -> Messages.CONTENT_DETECTION_STARTED(uid))
+      new ServiceResponse(req.service,req.task,data,TextStatus.STARTED)	
+  
+    }
+
   }
 
 }

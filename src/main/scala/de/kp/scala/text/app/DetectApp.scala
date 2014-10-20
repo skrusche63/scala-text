@@ -1,8 +1,9 @@
 package de.kp.scala.text.app
 
-import com.twitter.scalding.{Args,Job}
-import de.kp.scala.text.model.ProcessMode
-import de.kp.scala.text.job.VectorizeJob
+import com.twitter.scalding.Args
+
+import de.kp.scala.text.model._
+import de.kp.scala.text.Detector
 
 object DetectApp {
   
@@ -35,71 +36,8 @@ object DetectApp {
     )
     
     val args = Args(params)
-    detect(args)
+    new Detector().detect(args)
     
   }
 
-  def detect(args:Args) {
-
-    val start = System.currentTimeMillis()
-    
-    println("Text processing started...")
-    
-    val job = new VectorizeJob(args)
-    val res = job.run
-    
-    if (res == true) {
-
-      println(job.getClass().getName() + " sucessfully performed.")
-      executeNext(job,start)
-      
-    } else {
-
-      println(job.getClass().getName() + " failed. Text processing has stopped.")
-
-      val end = System.currentTimeMillis()           
-      println("Total time: " + (end-start) + " ms")
-    
-    }
-    
-    
-  }
-
-  private def executeNext(job:Job,start:Long) {
-      
-    job.next match {
-        
-      case None => {
-        /*
-         * No further processing stage
-         */
-        println("Text processing successfully finished.")
-        
-        val end = System.currentTimeMillis()           
-        println("Total time: " + (end-start) + " ms")
-        
-      }
-        
-      case Some(nextJob) => {
-
-        val res = nextJob.run
-        if (res == true) {
-
-          println(job.getClass().getName() + " sucessfully performed.")
-          executeNext(job,start)
-          
-        } else {
-
-          println(job.getClass().getName() + " failed. Text processing has stopped.")
-
-          val end = System.currentTimeMillis()           
-          println("Total time: " + (end-start) + " ms")
-          
-        }
-
-      }
-    
-    } 
-  
-  }
 }
