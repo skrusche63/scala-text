@@ -35,8 +35,10 @@ class TopicQuestor extends Actor with ActorLogging {
       val uid = req.data("uid")
 
       req.task match {
-       case "get:concept" => {
+       
+        case "get:concept" => {
 
+          // TODO
           val resp:ServiceResponse = null       
            
           origin ! Serializer.serializeResponse(resp)

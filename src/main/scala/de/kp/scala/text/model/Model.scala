@@ -98,9 +98,23 @@ object Serializer {
   
 }
 
+object Algorithms {
+  
+  val CONCEPT_DETECTION:String  = "DETECT"
+  val CONCEPT_PREDICTION:String = "PREDICT"
+    
+}
+
+object Sources {
+  val FILE:String    = "FILE"
+  val ELASTIC:String = "ELASTIC" 
+}
+
 object Messages {
 
   def ALGORITHM_IS_UNKNOWN(uid:String,algorithm:String):String = String.format("""Algorithm '%s' is unknown for uid '%s'.""", algorithm, uid)
+
+  def CONTENT_DETECTION(uid:String):String = String.format("""A general error appeared for uid '%s'.""", uid)
 
   def GENERAL_ERROR(uid:String):String = String.format("""A general error appeared for uid '%s'.""", uid)
   

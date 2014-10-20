@@ -38,6 +38,17 @@ object Configuration {
     (duration,retries,timeout)
     
   }
+  
+  def redis():(String,String) = {
+  
+    val cfg = config.getConfig("redis")
+    
+    val host = cfg.getString("host")
+    val port = cfg.getString("port")
+    
+    (host,port)
+    
+  }
 
   def rest():(String,Int) = {
       
