@@ -141,29 +141,14 @@ class VectorizeJob(args:Args) extends Job(args) {
      * this is replaced soon by Akka actors to enable parallel
      * processing
      */
-    val superiors = fs.listStatus(groupfiles)    
-    for (i <-0 until superiors.length) {
+    val clusters = fs.listStatus(groupfiles)    
+    for (i <-0 until clusters.length) {
       
-      val superior = superiors(i)
-      if (superior.isDir() == true) {
+      val cluster = clusters(i)
+      if (cluster.isDir() == true) {
         
-        /*
-         * The vectorization is perform for every 
-         * sub directory (or cluster) individually
-         */
-        val subordinates = fs.listStatus(superior.getPath())
-        for (j <- 0 until subordinates.length) {
-          
-          val subordinate = subordinates(j)
-          if (subordinate.isDir) {
-            throw new Exception("Directory structure is not appropriate for clustered vectorization.")            
-          } else {
-            
-            val txtfiles = subordinate.getPath()
-            vectorize(args,txtfiles)
-            
-          }
-        }
+        val txtfiles = cluster.getPath()
+        vectorize(args,txtfiles)
                 
       } else {
         throw new Exception("Directory structure is not appropriate for clustered vectorization.")

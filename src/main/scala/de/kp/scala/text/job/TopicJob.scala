@@ -98,15 +98,17 @@ class TopicJob(args:Args) extends Job(args) {
 	 * that this is a flat list of files with no subordinate
 	 * directory structure
 	 */
+    val group = -1
 	val txtfiles = new Path(input)
-    topics(args,txtfiles)
+
+    topics(args,group,txtfiles)
     
   }
   
   private def withCluster(args:Args) {
 
-    val i = args("input")    
-    val input = if (i.endsWith("/")) i.substring(0, i.length - 1) else i
+    val in = args("input")    
+    val input = if (in.endsWith("/")) in.substring(0, in.length - 1) else in
 
     /* 
 	 * The main directory of the clustered text artifacts
@@ -118,29 +120,20 @@ class TopicJob(args:Args) extends Job(args) {
      * this is replaced soon by Akka actors to enable parallel
      * processing
      */
-    val superiors = fs.listStatus(groupfiles)    
-    for (i <-0 until superiors.length) {
+    val clusters = fs.listStatus(groupfiles)    
+    for (i <-0 until clusters.length) {
       
-      val superior = superiors(i)
-      if (superior.isDir() == true) {
-        
+      val cluster = clusters(i)
+      if (cluster.isDir() == true) {
+
+        val txtfiles = cluster.getPath()
         /*
-         * The vectorization is perform for every 
-         * sub directory (or cluster) individually
+         * Determine cluster from path
          */
-        val subordinates = fs.listStatus(superior.getPath())
-        for (j <- 0 until subordinates.length) {
-          
-          val subordinate = subordinates(j)
-          if (subordinate.isDir) {
-            throw new Exception("Directory structure is not appropriate for clustered topic retrieval.")            
-          } else {
-            
-            val txtfiles = subordinate.getPath()
-            topics(args,txtfiles)
-            
-          }
-        }
+        val path = cluster.getPath().toString()
+        val id = (if (path.endsWith("/")) path.substring(0, path.length - 1) else path).split("/").last.toInt
+        
+        topics(args,id,txtfiles)
                 
       } else {
         throw new Exception("Directory structure is not appropriate for clustered topic retrieval.")
@@ -150,8 +143,10 @@ class TopicJob(args:Args) extends Job(args) {
     
   }
     
-  private def topics(args:Args,txtfiles:Path) {
+  private def topics(args:Args,group:Int,txtfiles:Path) {
 
+    // TODO Integrate group into output data
+    
     /*
      * The number of terms indicate how many most relevant
      * terms will be used to specify a certain topic
