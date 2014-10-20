@@ -34,7 +34,37 @@ object ElasticBuilderFactory {
    * respective topics
    */
   val UID_FIELD:String = "uid"
-  
+
+  /*
+   * The unique identifier of the cluster or other
+   * grouping mechanism the respective text document
+   * is assigned to
+   */  
+  val GROUP_FIELD:String = "group"
+
+  /*
+   * The unique identifier of the text document that is
+   * described by the extracted topics
+   */  
+  val DOC_FIELD:String = "doc"
+
+    /*
+   * The unique identifier of the topic assigned to the
+   * respective text document 
+   */  
+  val TOPIC_FIELD:String = "topic"
+
+    /*
+   * The score characterizes the relevance of the topic
+   * for the respective text document
+   */  
+  val SCORE_FIELD:String = "score"
+
+  /*
+   * The terms that specify the respective topic
+   */  
+  val TERM_FIELD:String = "term"
+    
   def createBuilder(mapping:String):XContentBuilder = {
     /*
      * Define mapping schema for index 'index' and 'type'; note, that
@@ -60,7 +90,31 @@ object ElasticBuilderFactory {
                             .field("index", "not_analyzed")
                           .endObject()
 
-                          // TODO
+                          /* group */
+                          .startObject(GROUP_FIELD)
+                            .field("type", "integer")
+                          .endObject()
+                          
+                          /* doc */
+                          .startObject(DOC_FIELD)
+                            .field("type", "string")
+                            .field("index", "not_analyzed")
+                          .endObject()
+                          
+                          /* topic */
+                          .startObject(TOPIC_FIELD)
+                            .field("type", "integer")
+                          .endObject()
+                          
+                          /* score */
+                          .startObject(SCORE_FIELD)
+                            .field("type", "double")
+                          .endObject()
+
+                          /* term */
+                          .startObject(TERM_FIELD)
+                            .field("type", "string")
+                          .endObject()
                         
                         .endObject() // properties
                       .endObject()   // mapping
