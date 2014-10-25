@@ -1,12 +1,5 @@
-![Dr.Krusche & Partner PartG](https://raw.github.com/skrusche63/spark-elastic/master/images/dr-kruscheundpartner.png)
+![Elasticworks.](https://raw.githubusercontent.com/skrusche63/spark-arules/master/images/predictiveworks.png)
 
-## Text Analysis Engine
+**Predictiveworks.** is an open ensemble of predictive engines and has been made to cover a wide range of today's analytics requirements. **Predictiveworks.**  brings the power of predictive analytics to Elasticsearch.
 
-### Clustering
-
-### Linguistic Processing
-
-### Topic Modeling
-
-### Vectorization
-
+## Reactive Text Analysis Engine
