@@ -36,7 +36,7 @@ class TopicQuestor extends Actor with ActorLogging {
 
       req.task match {
        
-        case "get:concept" => {
+        case "get:concepts" => {
 
           // TODO
           val resp:ServiceResponse = null       
