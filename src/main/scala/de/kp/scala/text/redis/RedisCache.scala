@@ -31,6 +31,11 @@ object RedisCache {
   def addStatus(req:ServiceRequest,status:String) {
    
     val (uid,task) = (req.data("uid"),req.task)
+    addStatus(uid,task,status)
+    
+  }
+  
+  def addStatus(uid:String,task:String,status:String) {
     
     val now = new Date()
     val timestamp = now.getTime()

@@ -19,8 +19,10 @@ package de.kp.scala.text
  */
 import com.twitter.scalding.{Args,Job}
 
-import de.kp.scala.text.model.ProcessMode
+import de.kp.scala.text.model._
 import de.kp.scala.text.job.VectorizeJob
+
+import de.kp.scala.text.redis.RedisCache
 
 class Detector {
   
@@ -34,9 +36,11 @@ class Detector {
     val res = job.run
     
     if (res == true) {
-
+      
+      val uid = args("uid")
+      
       println(job.getClass().getName() + " sucessfully performed.")
-      executeNext(job,start)
+      executeNext(job,start,uid)
       
     } else {
 
@@ -50,7 +54,7 @@ class Detector {
     
   }
 
-  private def executeNext(job:Job,start:Long) {
+  private def executeNext(job:Job,start:Long,uid:String) {
       
     job.next match {
         
@@ -58,6 +62,10 @@ class Detector {
         /*
          * No further processing stage
          */
+          
+        /* Update cache */
+        RedisCache.addStatus(uid,"train",TextStatus.FINISHED)
+        
         println("Text processing successfully finished.")
         
         val end = System.currentTimeMillis()           
@@ -71,7 +79,7 @@ class Detector {
         if (res == true) {
 
           println(job.getClass().getName() + " sucessfully performed.")
-          executeNext(job,start)
+          executeNext(job,start,uid)
           
         } else {
 

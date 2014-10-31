@@ -18,18 +18,22 @@ package de.kp.scala.text.actor
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-import akka.actor.{Actor,ActorLogging}
-
 import de.kp.scala.text.model._
 
-class PredictActor  extends Actor with ActorLogging {
+class FMActor extends BaseActor {
  
   def receive = {
 
     case req:ServiceRequest => {
-      /*
-       * Not implemented yet
-       */
+      
+      val uid = req.data("uid")      
+      val origin = sender    
+      
+      val msg = "Concept Prediction is not yet implemented."
+          
+      origin ! Serializer.serializeResponse(failure(req,msg))
+      context.stop(self)
+    
     }
     
   }

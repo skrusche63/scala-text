@@ -37,9 +37,6 @@ class TopicBuilder extends Actor with ActorLogging {
 
   implicit val ec = context.dispatcher
   
-  private val algorithms = Array(Algorithms.CONCEPT_DETECTION,Algorithms.CONCEPT_PREDICTION)
-  private val sources = Array(Sources.ELASTIC,Sources.FILE)
-  
   def receive = {
 
     case req:ServiceRequest => {
@@ -153,7 +150,7 @@ class TopicBuilder extends Actor with ActorLogging {
       }
         
       case Some(algorithm) => {
-        if (algorithms.contains(algorithm) == false) {
+        if (Algorithms.isAlgorithm(algorithm) == false) {
           return Some(Messages.ALGORITHM_IS_UNKNOWN(uid,algorithm))    
         }
           
@@ -168,7 +165,7 @@ class TopicBuilder extends Actor with ActorLogging {
       }
         
       case Some(source) => {
-        if (sources.contains(source) == false) {
+        if (Sources.isSource(source) == false) {
           return Some(Messages.SOURCE_IS_UNKNOWN(uid,source))    
         }          
       }
@@ -182,12 +179,13 @@ class TopicBuilder extends Actor with ActorLogging {
   private def actor(req:ServiceRequest):ActorRef = {
 
     val algorithm = req.data("algorithm")
-    if (algorithm == Algorithms.CONCEPT_DETECTION) { 
-      context.actorOf(Props(new DetectActor()))      
-
-    } else {
-      context.actorOf(Props(new PredictActor()))      
+    algorithm match {
       
+      case Algorithms.LDA => context.actorOf(Props(new LDAActor())) 
+      
+      case Algorithms.FM => context.actorOf(Props(new FMActor()))
+      
+      case _ => null
     }
   
   }

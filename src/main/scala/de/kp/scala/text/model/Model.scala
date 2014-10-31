@@ -99,15 +99,33 @@ object Serializer {
 }
 
 object Algorithms {
-  
-  val CONCEPT_DETECTION:String  = "DETECT"
-  val CONCEPT_PREDICTION:String = "PREDICT"
+  /*
+   * Latent Dirichlet Allocation (LDA) is used in combination
+   * with KMEANS to detect semantic topics from heterogeneous
+   * textual artifacts
+   */
+  val LDA:String = "LDA"
+  /*
+   * Factorization Machines(FM) are used in combination with
+   * KMEANS clustering to predict semantic concepts 
+   */
+  val FM:String = "FM"
     
+  private val algorithms = List(FM,LDA)
+  
+  def isAlgorithm(algorithm:String):Boolean = algorithms.contains(algorithm)
+  
 }
 
 object Sources {
-  val FILE:String    = "FILE"
+  
+  val HDFS:String = "HDFS"
   val ELASTIC:String = "ELASTIC" 
+
+  private val sources = List(ELASTIC,HDFS)
+  
+  def isSource(source:String):Boolean = sources.contains(source)
+  
 }
 
 object Messages {
