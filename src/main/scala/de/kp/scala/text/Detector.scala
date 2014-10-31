@@ -61,12 +61,34 @@ class Detector {
       case None => {
         /*
          * No further processing stage
-         */
-          
-        /* Update cache */
-        RedisCache.addStatus(uid,"train",TextStatus.FINISHED)
-        
+         */        
         println("Text processing successfully finished.")
+        
+        /* Determine output directory */
+        val args = job.args
+        
+        val input = args("input")
+        val mode  = args("mode")
+        
+        val dir = mode match {
+          /*
+           * In case of a clustered job; the directory is set
+           * to the one that holds the textual artifacts; this
+           * mechanism helps to distinguish between the other
+           * process mode by simply evaluating the postfix
+           */
+          case ProcessMode.WITH_CLUSTERS => input
+          case ProcessMode.WITHOUT_CLUSTERS => input + "-out"
+          
+          case _ => null
+          
+        }
+        
+        /* Add reference to output directory to RedisCache */
+        if (dir != null) RedisCache.addTopics(uid,dir)
+        
+        /* Finally update status */
+        RedisCache.addStatus(uid,"train",TextStatus.FINISHED)
         
         val end = System.currentTimeMillis()           
         println("Total time: " + (end-start) + " ms")

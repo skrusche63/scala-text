@@ -144,8 +144,6 @@ class TopicJob(args:Args) extends Job(args) {
   }
     
   private def topics(args:Args,group:Int,txtfiles:Path) {
-
-    // TODO Integrate group into output data
     
     /*
      * The number of terms indicate how many most relevant
@@ -276,17 +274,19 @@ class TopicJob(args:Args) extends Job(args) {
         }
     
       }
-      .mapTo( ('id,'topic,'score,'terms) -> 'line) {
-        value:(String,Int,Double,ArrayBuffer[String]) => {
+    val docGroupTopicWords = docTopicWords.insert('group,group)
+      .mapTo( ('id,'topic,'score,'terms,'group) -> 'line) {
+        value:(String,Int,Double,ArrayBuffer[String],Int) => {
         
-          val line = value._1 + ";" + value._2 + ";" + value._3 + ";" + value._4.mkString(" ")
-          line
+          /* (id;group;topic;score;terms) */
+          value._1 + ";" +value._5 + ";" + value._2 + ";" + value._3 + ";" + value._4.mkString(" ")
+          
         
         }
       }
 
     val outfile = txtfiles.toString + "-out"
-    docTopicWords.write(TextLine(outfile))
+    docGroupTopicWords.write(TextLine(outfile))
     
   }
   

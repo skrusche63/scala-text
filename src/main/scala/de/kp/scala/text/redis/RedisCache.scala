@@ -46,6 +46,22 @@ object RedisCache {
     client.zadd(k,timestamp,v)
     
   }
+
+  def addTopics(req:ServiceRequest,topics:String) {
+    addTopics(req.data("uid"),topics)
+  }
+
+  def addTopics(uid:String,topics:String) {
+   
+    val now = new Date()
+    val timestamp = now.getTime()
+    
+    val k = "topics:" + service + ":" + uid
+    val v = "" + timestamp + ":" + topics
+    
+    client.zadd(k,timestamp,v)
+    
+  }
   
   def metaExists(uid:String):Boolean = {
 
