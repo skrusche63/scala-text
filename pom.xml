@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>scala-text</groupId>
   <artifactId>scala-text</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>Scala-Text</name>
   <description>Text Analysis Engine with Mahout &amp; Scalding</description>
   <inceptionYear>2010</inceptionYear>
@@ -229,6 +229,7 @@
   </build>
   <organization>
   	<name>Dr. Krusche &amp; Partner PartG</name>
-  	<url>http://dr-kruscheundpartner.de</url>
+  	<url>http://dr-kruscheundpartner.com</url>
   </organization>
+  <url>https://github.com/skrusche63/scala-text</url>
 </project>

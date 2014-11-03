@@ -30,6 +30,33 @@ case class ServiceResponse(
   service:String,task:String,data:Map[String,String],status:String
 )
 
+case class Document(
+    /* 
+     * Unique identifier to distinguish a certain document from
+     * all other documents of a corpus
+     */
+    uid:String,
+    /*
+     * Unique identifier of a text cluster or group that is used
+     * to gather documents that have similar content
+     */
+    group:Int,
+    /*
+     * Unique identifier of the topic that semantic describes the
+     * respective document; the value is used to distinguish topics
+     */
+    topic:Int,
+    /*
+     * Score (0..1) describes the semantic relevance of the topic
+     * for the respective document
+     */
+    score:Double,
+    /*
+     * A list of terms that specifies a certain topic
+     */
+    terms:List[String]
+)
+
 /*
  * Service requests are mapped onto job descriptions and are stored
  * in a Redis instance
@@ -80,6 +107,8 @@ object ProcessStage {
 object Serializer {
     
   implicit val formats = Serialization.formats(NoTypeHints)
+
+  def serializeDocument(document:Document):String = write(document)
 
   /*
    * Support for serialization and deserialization of job descriptions
@@ -135,10 +164,14 @@ object Messages {
   def CONTENT_DETECTION_STARTED(uid:String):String = String.format("""Content detection started for uid '%s'.""", uid)
 
   def GENERAL_ERROR(uid:String):String = String.format("""A general error appeared for uid '%s'.""", uid)
+
+  def INVALID_GROUP_PROVIDED(uid:String):String = String.format("""Invalid group provided for uid '%s'.""", uid)
   
   def MISSING_PARAMETERS(uid:String):String = String.format("""Missing parameters for uid '%s'.""", uid)
  
   def NO_ALGORITHM_PROVIDED(uid:String):String = String.format("""No algorithm provided for uid '%s'.""", uid)
+
+  def NO_GROUP_PROVIDED(uid:String):String = String.format("""No group provided for uid '%s'.""", uid)
 
   def NO_PARAMETERS_PROVIDED(uid:String):String = String.format("""No parameters provided for uid '%s'.""", uid)
 
@@ -153,7 +186,9 @@ object Messages {
   def TASK_DOES_NOT_EXIST(uid:String):String = String.format("""The task with uid '%s' does not exist.""", uid)
 
   def TASK_IS_UNKNOWN(uid:String,task:String):String = String.format("""The task '%s' is unknown for uid '%s'.""", task, uid)
-  
+ 
+  def TOPICS_DO_NOT_EXIST(uid:String):String = String.format("""Topics do not exist for uid '%s'.""", uid)
+
 }
 
 object TextStatus {

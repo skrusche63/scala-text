@@ -29,6 +29,9 @@ import org.apache.hadoop.fs.{FileSystem,Path}
 import org.apache.hadoop.io.{IntWritable,Text}
 import org.apache.mahout.math.VectorWritable
 
+import de.kp.scala.text.model._
+
+import de.kp.scala.text.sink.RedisSink
 import de.kp.scala.text.model.{ProcessMode,ProcessStage}
 
 import scala.collection.mutable.{ArrayBuffer,HashMap}
@@ -42,6 +45,8 @@ class TopicJob(args:Args) extends Job(args) {
     
   val conf = new Configuration()
   val fs = FileSystem.get(conf)
+  
+  val sink = new RedisSink()
   
   override implicit val mode = new Hdfs(true, conf) 
 
@@ -144,6 +149,12 @@ class TopicJob(args:Args) extends Job(args) {
   }
     
   private def topics(args:Args,group:Int,txtfiles:Path) {
+    
+    /*
+     * Add group to Redis instance
+     */
+    val uid = args("uid")
+    sink.addGroup(uid, group)
     
     /*
      * The number of terms indicate how many most relevant
@@ -277,9 +288,15 @@ class TopicJob(args:Args) extends Job(args) {
     val docGroupTopicWords = docTopicWords.insert('group,group)
       .mapTo( ('id,'topic,'score,'terms,'group) -> 'line) {
         value:(String,Int,Double,ArrayBuffer[String],Int) => {
-        
+          
+          val (uid,topic,score,terms,group) = value
+          
+          /* Add document to Redis instance */
+          val doc = new Document(uid,group,topic,score,terms.toList)
+          sink.addDocument(uid,doc)
+          
           /* (id;group;topic;score;terms) */
-          value._1 + ";" +value._5 + ";" + value._2 + ";" + value._3 + ";" + value._4.mkString(" ")
+          uid + ";" + group + ";" + topic + ";" + score + ";" + terms.mkString(" ")
           
         
         }
