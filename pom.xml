@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>scala-text</groupId>
   <artifactId>scala-text</artifactId>
-  <version>0.0.1</version>
+  <version>0.2.0</version>
   <name>Scala-Text</name>
   <description>Text Analysis Engine with Mahout &amp; Scalding</description>
   <inceptionYear>2010</inceptionYear>
